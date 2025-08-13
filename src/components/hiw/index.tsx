@@ -1,350 +1,223 @@
 "use client";
-import React, { useRef, useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Typewriter from "typewriter-effect";
-import Section from "../common/section";
-import DefaultWuboo from "../assets/wuboos/default";
-import YogaWuboo from "../assets/wuboos/yogaWuboo";
-import SelectedWubooCard from "./SelectedWubooCard";
+
+import React, { useRef, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Button from "../common/button";
-import { ArrowRightIcon, ArrowLeftIcon, RotateCcw } from "lucide-react";
 import Sparkles from "../assets/icons/sparkles";
-import ProductivityCard from "./ProductivityLevelCard";
+import Step1Img from "../assets/screen1.png";
+import Step2Img from "../assets/screen1.png";
+import Step3Img from "../assets/screen1.png";
+import TryItOut from "./TryItOut";
+import Section from "../common/section";
+import { cn } from "@/utils";
 
-const HowItWorks = () => {
-  const [selectedWuboo, setSelectedWuboo] = useState<"yoga" | "default">(
-    "default"
-  );
-  const [step, setStep] = useState(1);
-  const [dayLogText, setDayLogText] = useState("");
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+const steps = [
+  {
+    title: "Log Your Day",
+    description: "Record your daily activities and mood with ease.",
+    image: Step1Img,
+  },
+  {
+    title: "Get Actionable Insights",
+    description:
+      "Our AI analyzes your day and gives personalized advice to improve productivity.",
+    image: Step2Img,
+  },
+  {
+    title: "Achieve Your Goals",
+    description:
+      "Use insights to set targets and track your progress effectively.",
+    image: Step3Img,
+  },
+];
 
-  const handleSelect = (type: "yoga" | "default") => {
-    setSelectedWuboo(type);
+const HowItWorksSection = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const tryItOutRef = useRef<HTMLDivElement>(null);
+  const [showTryItOut, setShowTryItOut] = useState(false);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end end"],
+  });
+
+  const handleTryItOut = () => {
+    setShowTryItOut(true);
+    setTimeout(() => {
+      tryItOutRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 1000);
   };
-
-  const mockAnalyzeDay = async (dayLog: string) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve("Analysis complete");
-      }, 5000);
-    });
-  };
-
-  const handleGetInsights = async () => {
-    if (!dayLogText.trim()) return;
-
-    setIsAnalyzing(true);
-    setStep(3);
-
-    try {
-      await mockAnalyzeDay(dayLogText);
-      setStep(4);
-    } catch (error) {
-      console.error("Analysis failed:", error);
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
-
-  const WubooImage = selectedWuboo === "yoga" ? YogaWuboo : DefaultWuboo;
 
   return (
-    <Section className="pt-10 pb-6 px-28 overflow-hidden flex flex-col items-center">
-      {/* Heading always stays - structure remains constant */}
-      <h1 className="text-4xl font-basis33 text-black text-center mb-8">
-        <div className="step-indicator">
-          <Typewriter
-            key={`step-${step}`} // Force re-render when step changes
-            onInit={(typewriter) => {
-              typewriter
-                .typeString(`Step ${step}:`)
-                .callFunction(() => {
-                  // Remove cursor after typing is done
-                  const cursor = document.querySelector(".Typewriter__cursor");
-                  if (cursor) cursor.remove();
-                })
-                .start();
-            }}
-            options={{
-              delay: 50,
-              cursor: "|",
-            }}
-          />
-        </div>
-        <h3 className="text-8xl leading-[90%]">
-          <div className="main-text">
-            <Typewriter
-              key={`main-${step}`} // Force re-render when step changes
-              onInit={(typewriter) => {
-                typewriter
-                  .typeString(
-                    step === 1
-                      ? "Choose your AI Companion"
-                      : step === 2
-                      ? "Enter your Daily Log"
-                      : step === 3
-                      ? "AI Magic in Progress"
-                      : "Your Personalized Insights"
-                  )
-                  .callFunction(() => {
-                    // Remove cursor after typing is done
-                    const cursor = document.querySelector(
-                      ".Typewriter__cursor"
-                    );
-                    if (cursor) cursor.remove();
-                  })
-                  .start();
-              }}
-              options={{
-                delay: 60,
-                cursor: "|",
-              }}
-            />
-          </div>
-        </h3>
-      </h1>
+    <Section
+      className={cn("relative h-fit bg-gray-50", showTryItOut ? "pb-6" : "")}
+      style={{ scrollSnapType: "y mandatory" }}
+    >
+      {/* Fixed container for all sticky elements */}
+      <div ref={sectionRef} className="h-[400vh] w-full relative">
+        <div
+          className="sticky py-10 top-0 h-screen flex flex-col items-center justify-between"
+          style={{ scrollSnapAlign: "start" }}
+        >
+          {/* Main heading */}
+          <h2 className="text-6xl font-bold text-black text-center font-neue-plak">
+            How It Works
+          </h2>
 
-      <AnimatePresence mode="wait">
-        {/* STEP 1 */}
-        {step === 1 ? (
-          <motion.div
-            key="step1"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="w-full flex flex-col items-center justify-start gap-8"
-          >
-            <div className="flex justify-center gap-36 w-full items-center">
-              <motion.div
-                initial={{ x: -100, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -200, opacity: 0 }}
-                transition={{ duration: 0.5 }}
-                className="flex flex-col gap-10"
-              >
-                {/* Wuboo selection grid */}
-                <div className="flex gap-20">
-                  <div
-                    className="flex flex-col gap-2 justify-start items-center cursor-pointer"
-                    onClick={() => handleSelect("default")}
-                  >
-                    <h5 className="text-[3.1rem] font-basis33 text-black">
-                      Wuboo
-                    </h5>
-                    <DefaultWuboo className="w-36 h-36" />
-                  </div>
-                  <div
-                    className="flex flex-col gap-2 justify-start items-center cursor-pointer"
-                    onClick={() => handleSelect("yoga")}
-                  >
-                    <h5 className="text-[3.1rem] font-basis33 text-black">
-                      Wuboo
-                    </h5>
-                    <YogaWuboo className="w-36 h-36" />
-                  </div>
-                </div>
-                <div className="flex gap-20">
-                  <div
-                    className="flex flex-col gap-2 justify-start items-center cursor-pointer"
-                    onClick={() => handleSelect("default")}
-                  >
-                    <h5 className="text-[3.1rem] font-basis33 text-black">
-                      Wuboo
-                    </h5>
-                    <DefaultWuboo className="w-36 h-36" />
-                  </div>
-                  <div
-                    className="flex flex-col gap-2 justify-start items-center cursor-pointer"
-                    onClick={() => handleSelect("yoga")}
-                  >
-                    <h5 className="text-[3.1rem] font-basis33 text-black">
-                      Wuboo
-                    </h5>
-                    <YogaWuboo className="w-36 h-36" />
-                  </div>
-                </div>
-              </motion.div>
+          {/* Content container with phone and description */}
+          <div className="flex items-center justify-center w-full">
+            {/* Phone mockup in center */}
+            <div className="w-[300px] h-[70vh] relative mx-20">
+              {steps.map((step, index) => {
+                // Smoother transitions with longer overlap periods
+                const start = index / 3;
+                const end = (index + 1) / 3;
+                const transitionBuffer = 0.15; // Increased buffer for smoother transitions
 
-              {/* Selected Wuboo card */}
-              <motion.div
-                initial={{ x: 100, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: 200, opacity: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <SelectedWubooCard
-                  wubooType={selectedWuboo}
-                  name="Wuboo"
-                  dob="March 21 2006"
-                  specialDance="Monkey Jump"
-                  personality="Fun"
-                  age="5"
-                />
-              </motion.div>
-            </div>
+                let translate;
+                if (index === 0) {
+                  translate = useTransform(
+                    scrollYProgress,
+                    [0, end - transitionBuffer, end],
+                    ["0%", "0%", "-400%"]
+                  );
+                } else if (index === 2) {
+                  translate = useTransform(
+                    scrollYProgress,
+                    [start, start + transitionBuffer, 1],
+                    ["-400%", "0%", "0%"]
+                  );
+                } else {
+                  translate = useTransform(
+                    scrollYProgress,
+                    [
+                      start,
+                      start + transitionBuffer,
+                      end - transitionBuffer,
+                      end,
+                    ],
+                    ["-400%", "0%", "0%", "-400%"]
+                  );
+                }
 
-            <div className="flex justify-end self-end gap-4">
-              <Button
-                variant="primary"
-                className="text-white font-neue-plak font-semibold text-xl px-[22px] py-[7px] flex gap-2.5 items-center rounded-[18px]"
-                onClick={() => setStep(2)}
-              >
-                Continue <ArrowRightIcon />
-              </Button>
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="step2-3-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="w-full h-full flex flex-col items-center justify-center gap-10"
-          >
-            <div className="flex justify-center items-center gap-20 relative flex-1 w-full">
-              {/* Wuboo + Speech bubble - always visible, just changes position and scale */}
-              <motion.div
-                initial={{ x: 0, opacity: 0 }}
-                animate={{
-                  x: step === 3 ? "36.5px" : 0,
-                  opacity: 1,
-                  y: step === 3 ? "15px" : 0,
-                  scale: step === 3 ? 1.3 : 1,
-                }}
-                transition={{ duration: 0.7, ease: "easeInOut" }}
-                className="relative flex flex-col items-center"
-              >
-                {/* Speech bubble */}
-                <div className="absolute w-50 top-0 -translate-y-[calc(100%+10px)] text-black left-1/2 -translate-x-1/2 bg-[#F7F7F7] border border-gray-300 rounded-xl px-4 py-2 shadow-md">
-                  <Typewriter
-                    key={step} // Force re-render when step changes
-                    onInit={(typewriter) => {
-                      if (step === 3) {
-                        typewriter
-                          .deleteAll()
-                          .typeString("Analyzing your day with AI magic...")
-                          .pauseFor(1500)
-                          .deleteChars(3)
-                          .typeString("✨")
-                          .pauseFor(1000)
-                          .deleteChars(1)
-                          .typeString("...")
-                          .callFunction(() => {
-                            // Remove cursor after typing is done
-                            const cursor = document.querySelector(
-                              ".Typewriter__cursor"
-                            );
-                            if (cursor) cursor.remove();
-                          })
-                          .start();
-                      } else if (step === 2) {
-                        typewriter
-                          .typeString(
-                            "Hey! My name's Wuboo. Tell me about your day!"
-                          )
-                          .callFunction(() => {
-                            // Remove cursor after typing is done
-                            const cursor = document.querySelector(
-                              ".Typewriter__cursor"
-                            );
-                            if (cursor) cursor.remove();
-                          })
-                          .start();
-                      } else {
-                        typewriter
-                          .deleteAll()
-                          .typeString(
-                            "Your productivity levels are low. But we can work on that"
-                          )
-                          .callFunction(() => {
-                            const cursor = document.querySelector(
-                              ".Typewriter__cursor"
-                            );
-                            if (cursor) cursor.remove();
-                          })
-                          .start();
-                      }
-                    }}
-                    options={{
-                      delay: 50,
-                      cursor: "|",
+                return (
+                  <motion.img
+                    key={index}
+                    src={step.image.src}
+                    alt={step.title}
+                    className="absolute inset-0 w-full h-full object-contain"
+                    style={{ translateX: translate }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 30,
                     }}
                   />
-                  {/* Arrow */}
-                  <div className="absolute bottom-[-6px] left-1/2 -translate-x-1/2 w-3 h-3 bg-[#F7F7F7] border-l border-b border-gray-300 -rotate-45"></div>
-                </div>
-                <WubooImage className="w-50 h-50" />
-              </motion.div>
-
-              {/* Input + Button - conditionally rendered and animated */}
-              {/* {step === 2 && ( */}
-              <motion.div
-                initial={{ x: 0, opacity: 1 }}
-                animate={{
-                  x: step !== 2 ? "200vw" : 0,
-                  opacity: step !== 2 ? 0 : 1,
-                  width: step !== 2 ? "0" : "50%",
-                }}
-                transition={{ duration: 0.7, ease: "easeInOut" }}
-                className="flex flex-col w-1/2 h-72"
-              >
-                <textarea
-                  placeholder="Tell me about your day..."
-                  value={dayLogText}
-                  onChange={(e) => setDayLogText(e.target.value)}
-                  className="w-full h-full active:outline-none focus:outline-none font-montserrat text-2xl font-light border border-[#CECECE] text-black bg-[#FDFDFD] rounded-2xl resize-none p-4"
-                />
-                <Button
-                  variant="primary"
-                  className="mt-4 text-white w-fit font-neue-plak font-normal text-xl px-[22px] py-[7px] rounded-[18px] flex gap-2 items-center"
-                  onClick={handleGetInsights}
-                  disabled={!dayLogText.trim()}
-                >
-                  Get Insights <Sparkles className="w-6 h-6" />
-                </Button>
-              </motion.div>
-              <motion.div
-                initial={{ x: "200vw", opacity: 0 }}
-                animate={{
-                  x: step !== 4 ? "calc(200vw)" : 0,
-                  opacity: step !== 4 ? 0 : 1,
-                  width: step !== 4 ? "0" : "50%",
-                  height: step !== 4 ? "0" : "fit-content",
-                }}
-                transition={{ duration: 0.7, ease: "easeInOut" }}
-                className="flex flex-col w-1/2 h-fit"
-              >
-                <ProductivityCard />
-              </motion.div>
-              {/* )} */}
+                );
+              })}
             </div>
 
-            {(step === 2 || step === 4) && (
-              <div className="flex justify-between w-full">
-                <Button
-                  variant="secondary"
-                  className="font-neue-plak text-primary font-semibold text-xl w-fit px-[22px] py-[7px] flex gap-2.5 items-center rounded-[18px]"
-                  onClick={() => setStep(1)}
-                  disabled={isAnalyzing}
-                >
-                  {step === 2 ? (
-                    <>
-                      <ArrowLeftIcon /> Go Back
-                    </>
-                  ) : (
-                    <>
-                      Start Over <RotateCcw />
-                    </>
-                  )}
-                </Button>
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+            {/* Step content on the right */}
+            <div className="w-1/2 h-full relative flex flex-col items-center justify-center">
+              {steps.map((step, index) => {
+                const start = index / 3;
+                const end = (index + 1) / 3;
+                const transitionBuffer = 0.15; // Same buffer for consistency
+
+                let translate, opacity;
+                if (index === 0) {
+                  translate = useTransform(
+                    scrollYProgress,
+                    [0, end - transitionBuffer, end],
+                    ["0%", "0%", "400%"]
+                  );
+                  opacity = useTransform(
+                    scrollYProgress,
+                    [0, end - transitionBuffer - 0.05, end - 0.05],
+                    [1, 1, 0]
+                  );
+                } else if (index === 2) {
+                  translate = useTransform(
+                    scrollYProgress,
+                    [start, start + transitionBuffer, 1],
+                    ["400%", "0%", "0%"]
+                  );
+                  opacity = useTransform(
+                    scrollYProgress,
+                    [start + 0.05, start + transitionBuffer + 0.05, 1],
+                    [0, 1, 1]
+                  );
+                } else {
+                  translate = useTransform(
+                    scrollYProgress,
+                    [
+                      start,
+                      start + transitionBuffer,
+                      end - transitionBuffer,
+                      end,
+                    ],
+                    ["400%", "0%", "0%", "400%"]
+                  );
+                  opacity = useTransform(
+                    scrollYProgress,
+                    [
+                      start + 0.05,
+                      start + transitionBuffer + 0.05,
+                      end - transitionBuffer - 0.05,
+                      end - 0.05,
+                    ],
+                    [0, 1, 1, 0]
+                  );
+                }
+
+                return (
+                  <motion.div
+                    key={index}
+                    style={{
+                      translateX: translate,
+                      opacity,
+                      position: "absolute",
+                      width: "100%",
+                    }}
+                    className="flex flex-col justify-center h-full"
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 30,
+                    }}
+                  >
+                    <h3 className="text-6xl font-semibold text-black mb-2.5 font-basis33">
+                      {step.title}
+                    </h3>
+                    <p className="text-lg text-gray-700 leading-relaxed mb-6 font-neue-plak">
+                      {step.description}
+                    </p>
+                    {index === 2 && (
+                      <Button
+                        variant="primary"
+                        className="bg-primary w-fit text-white rounded-xl text-xl font-semibold flex items-center px-8 py-4"
+                        onClick={handleTryItOut}
+                      >
+                        Try It Out <Sparkles className="w-6 h-6 ml-2" />
+                      </Button>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Snap points for each section */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="h-screen" style={{ scrollSnapAlign: "start" }} />
+        <div className="h-screen" style={{ scrollSnapAlign: "start" }} />
+        <div className="h-screen" style={{ scrollSnapAlign: "start" }} />
+      </div>
+
+      {showTryItOut && <TryItOut ref={tryItOutRef} />}
     </Section>
   );
 };
 
-export default HowItWorks;
+export default HowItWorksSection;
