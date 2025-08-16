@@ -5,6 +5,7 @@ const Button = ({
   className,
   onClick,
   children,
+  id,
   disabled,
 }: {
   variant: string;
@@ -12,6 +13,7 @@ const Button = ({
   onClick?: () => void;
   children: React.ReactNode;
   disabled?: boolean;
+  id?: string;
 }) => {
   return (
     <button
@@ -22,6 +24,7 @@ const Button = ({
       } ${className} py-2.5 px-6 rounded-[20px]`}
       onClick={onClick}
       disabled={disabled}
+      id={id}
     >
       {children}
     </button>

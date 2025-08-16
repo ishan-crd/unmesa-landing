@@ -31,26 +31,88 @@ const gradients = [
   "bg-gradient-to-bl from-primary to-secondary",
 ];
 
-const vhToPx = (vh: number) => (vh / 100) * window.innerHeight;
+const vhToPx = (vh: number, containerHeight?: number) =>
+  (vh / 100) * (containerHeight || window.innerHeight);
 
 const FloatingBubblesBG: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const ballsRef = useRef<Ball[]>([]);
 
   useEffect(() => {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+    const getContainerDimensions = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        return { w: rect.width, h: rect.height };
+      }
+      return { w: window.innerWidth, h: window.innerHeight };
+    };
+
+    const { w, h } = getContainerDimensions();
 
     const initialBalls: Omit<Ball, "gradientClass" | "moon">[] = [
-      { x: w * 0.15, y: h * 0.2, radius: vhToPx(35) / 2, dx: 1, dy: 0.7 },
-      { x: w * 0.5, y: h * 0.25, radius: vhToPx(25) / 2, dx: -0.8, dy: 1 },
-      { x: w * 0.85, y: h * 0.15, radius: vhToPx(30) / 2, dx: 1, dy: -0.6 },
-      { x: w * 0.75, y: h * 0.45, radius: vhToPx(20) / 2, dx: -1, dy: 0.8 },
-      { x: w * 0.35, y: h * 0.7, radius: vhToPx(28) / 2, dx: 0.6, dy: -1 },
-      { x: w * 0.2, y: h * 0.55, radius: vhToPx(22) / 2, dx: 1, dy: -0.8 },
-      { x: w * 0.6, y: h * 0.8, radius: vhToPx(35) / 2, dx: -0.7, dy: 0.6 },
-      { x: w * 0.4, y: h * 0.85, radius: vhToPx(24) / 2, dx: -0.9, dy: 0.7 },
-      { x: w * 0.9, y: h * 0.65, radius: vhToPx(26) / 2, dx: 0.8, dy: -0.9 },
+      {
+        x: w * 0.15,
+        y: h * 0.2,
+        radius: vhToPx(35, Math.max(h, 600)) / 2,
+        dx: 1,
+        dy: 0.7,
+      },
+      {
+        x: w * 0.5,
+        y: h * 0.25,
+        radius: vhToPx(25, Math.max(h, 600)) / 2,
+        dx: -0.8,
+        dy: 1,
+      },
+      {
+        x: w * 0.85,
+        y: h * 0.15,
+        radius: vhToPx(30, Math.max(h, 600)) / 2,
+        dx: 1,
+        dy: -0.6,
+      },
+      {
+        x: w * 0.75,
+        y: h * 0.45,
+        radius: vhToPx(20, Math.max(h, 600)) / 2,
+        dx: -1,
+        dy: 0.8,
+      },
+      {
+        x: w * 0.35,
+        y: h * 0.7,
+        radius: vhToPx(28, Math.max(h, 600)) / 2,
+        dx: 0.6,
+        dy: -1,
+      },
+      {
+        x: w * 0.2,
+        y: h * 0.55,
+        radius: vhToPx(22, Math.max(h, 600)) / 2,
+        dx: 1,
+        dy: -0.8,
+      },
+      {
+        x: w * 0.6,
+        y: h * 0.8,
+        radius: vhToPx(35, Math.max(h, 600)) / 2,
+        dx: -0.7,
+        dy: 0.6,
+      },
+      {
+        x: w * 0.4,
+        y: h * 0.85,
+        radius: vhToPx(24, Math.max(h, 600)) / 2,
+        dx: -0.9,
+        dy: 0.7,
+      },
+      {
+        x: w * 0.9,
+        y: h * 0.65,
+        radius: vhToPx(26, Math.max(h, 600)) / 2,
+        dx: 0.8,
+        dy: -0.9,
+      },
     ];
 
     ballsRef.current = initialBalls.map((b, i) => {
@@ -60,7 +122,7 @@ const FloatingBubblesBG: React.FC = () => {
         gradientClass: gradients[i % gradients.length],
         moon: hasMoon
           ? {
-              radius: vhToPx(14) / 2,
+              radius: vhToPx(14, Math.max(h, 600)) / 2,
               angle: Math.random() * Math.PI * 2,
               angleSpeed: 0.003 + Math.random() * 0.002,
               gradientClass: gradients[(i + 4) % gradients.length],
@@ -72,8 +134,7 @@ const FloatingBubblesBG: React.FC = () => {
     let animationFrame: number;
 
     const animate = () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      const { w, h } = getContainerDimensions();
 
       ballsRef.current.forEach((ball) => {
         let moonX: number | null = null;
@@ -149,7 +210,23 @@ const FloatingBubblesBG: React.FC = () => {
     };
 
     animate();
-    return () => cancelAnimationFrame(animationFrame);
+
+    const handleResize = () => {
+      const { w: newW, h: newH } = getContainerDimensions();
+      ballsRef.current.forEach((ball) => {
+        if (ball.x > newW) ball.x = newW - ball.radius;
+        if (ball.y > newH) ball.y = newH - ball.radius;
+        if (ball.x < 0) ball.x = ball.radius;
+        if (ball.y < 0) ball.y = ball.radius;
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   return (

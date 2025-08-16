@@ -1,16 +1,25 @@
 import { cn } from "@/utils";
-import React from "react";
+import React, { forwardRef } from "react";
 
-const Section = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
+const Section = forwardRef<
+  HTMLDivElement,
+  {
+    children: React.ReactNode;
+    className?: string;
+    style?: React.CSSProperties;
+    id?: string;
+  }
+>(({ children, className, style, id }, ref) => {
   return (
-    <div className={cn("w-[100dvw] h-[100dvh]", className)}>{children}</div>
+    <section
+      ref={ref}
+      className={cn("w-screen h-[100dvh]", className)}
+      style={style}
+      id={id}
+    >
+      {children}
+    </section>
   );
-};
+});
 
 export default Section;

@@ -13,6 +13,8 @@
   --font-neue-plak: var(--font-neue-plak);
   --font-montserrat: var(--font-montserrat);
   --font-basis33: var(--font-basis33);
+  --font-poppins: var(--font-poppins);
+  --font-inter: var(--font-inter);
   --color-primary: #2b71fa;
   --color-secondary: #bfd4fd;
   --shadow-backdrop: 0 4.87px 52px -5.68px rgba(0, 0, 0, 0.25);
@@ -33,8 +35,14 @@ body {
   overflow-x: hidden;
 }
 
+/* html,
+body {
+  overflow-x: hidden;
+} */
+
 html {
   font-size: 14px;
+  scroll-behavior: smooth;
 }
 
 @keyframes type-cursor {
