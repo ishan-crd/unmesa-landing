@@ -1,4 +1,3 @@
-import FloatingBubblesBG from "@/components/common/floatingBubbles";
 import HeroSection from "@/components/hero";
 import HowItWorks from "@/components/hiw";
 import UniqueFeatures from "@/components/uniqueFeat";

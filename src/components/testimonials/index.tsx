@@ -73,7 +73,7 @@ const TestimonialCard = ({
       ))}
     </div>
     <p className="text-gray-700 font-poppins text-base leading-relaxed mb-6">
-      "{testimonial.content}"
+      &quot;{testimonial.content}&quot;
     </p>
     <div className="flex items-center">
       <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-semibold text-lg">

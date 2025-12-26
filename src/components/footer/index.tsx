@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { Linkedin, Twitter, Instagram, PhoneCall } from "lucide-react";
+import { Linkedin, Twitter, Instagram } from "lucide-react";
 import DefaultWubooWithHalo from "../assets/wuboos/haloDefault";
-import LogoWhite from "../assets/icons/logoWhite";
 import FloatingBubblesBG from "../common/floatingBubbles";
 import Logo from "../assets/icons/logo";
 

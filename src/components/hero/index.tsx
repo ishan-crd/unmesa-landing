@@ -83,7 +83,7 @@ const HeroSection = () => {
               transition={{ duration: 0.5, ease: "easeInOut" }}
               className="flex items-center justify-center gap-2 from-secondary to-primary bg-gradient-to-r text-white font-neue-plak text-base md:text-lg rounded-full px-6 py-3 shadow-lg w-fit max-w-[90%]"
             >
-              You're on the waitlist! <PartyPopper />
+              You&apos;re on the waitlist! <PartyPopper />
             </motion.div>
           )}
         </AnimatePresence>

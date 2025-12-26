@@ -1,6 +1,4 @@
 import React from "react";
-import DefaultWuboo from "../assets/wuboos/default";
-import YogaWuboo from "../assets/wuboos/yogaWuboo";
 import { Mascot, MASCOT_SVGS } from "./TryItOut";
 
 const SelectedWubooCard = ({ mascot }: { mascot: Mascot }) => {

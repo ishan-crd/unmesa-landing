@@ -1,8 +1,7 @@
 "use client";
-import React, { useRef, useState, useEffect, forwardRef } from "react";
+import React, { useState, useEffect, forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Typewriter from "typewriter-effect";
-import Section from "../common/section";
 import DefaultWuboo from "../assets/wuboos/default";
 import YogaWuboo from "../assets/wuboos/yogaWuboo";
 import SelectedWubooCard from "./SelectedWubooCard";
@@ -61,8 +60,6 @@ const TryItOut = forwardRef<HTMLDivElement>((_, ref) => {
   useEffect(() => {
     if (!insightsId) return;
 
-    let intervalId: NodeJS.Timeout;
-
     const fetchInsights = async () => {
       try {
         const { data } = await axios.get(`/api/insights/${insightsId}`);
@@ -81,7 +78,7 @@ const TryItOut = forwardRef<HTMLDivElement>((_, ref) => {
 
     fetchInsights();
 
-    intervalId = setInterval(fetchInsights, 2000);
+    const intervalId: NodeJS.Timeout = setInterval(fetchInsights, 2000);
 
     return () => clearInterval(intervalId);
   }, [insightsId]);

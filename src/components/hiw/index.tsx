@@ -46,56 +46,61 @@ const HowItWorksSection = () => {
   const isMobile = useMediaQuery("(max-width: 680px)");
   const isTablet = useMediaQuery("(min-width: 681px) and (max-width: 1100px)");
 
-  // Pre-calculate all transforms for each step to avoid conditional hooks
-  const stepTransforms = steps.map((_, index) => {
-    const start = index / 3;
-    const end = (index + 1) / 3;
-    const transitionBuffer = 0.15;
+  // Pre-calculate all transforms for each step - hooks must be called at top level
+  const transitionBuffer = 0.15;
+  
+  // Step 0 transforms
+  const step0Start = 0;
+  const step0End = 1 / 3;
+  const step0Translate = useTransform(
+    scrollYProgress,
+    [step0Start, step0End - transitionBuffer, step0End],
+    ["0%", "0%", "-250%"]
+  );
+  const step0Opacity = useTransform(
+    scrollYProgress,
+    [step0Start, step0End - transitionBuffer - 0.05, step0End - 0.05],
+    [1, 1, 0]
+  );
 
-    let translate, opacity;
+  // Step 1 transforms
+  const step1Start = 1 / 3;
+  const step1End = 2 / 3;
+  const step1Translate = useTransform(
+    scrollYProgress,
+    [step1Start, step1Start + transitionBuffer, step1End - transitionBuffer, step1End],
+    ["250%", "0%", "0%", "-250%"]
+  );
+  const step1Opacity = useTransform(
+    scrollYProgress,
+    [
+      step1Start + 0.05,
+      step1Start + transitionBuffer + 0.05,
+      step1End - transitionBuffer - 0.05,
+      step1End - 0.05,
+    ],
+    [0, 1, 1, 0]
+  );
 
-    if (index === 0) {
-      translate = useTransform(
-        scrollYProgress,
-        [0, end - transitionBuffer, end],
-        ["0%", "0%", "-250%"]
-      );
-      opacity = useTransform(
-        scrollYProgress,
-        [0, end - transitionBuffer - 0.05, end - 0.05],
-        [1, 1, 0]
-      );
-    } else if (index === 2) {
-      translate = useTransform(
-        scrollYProgress,
-        [start, start + transitionBuffer, 1],
-        ["250%", "0%", "0%"]
-      );
-      opacity = useTransform(
-        scrollYProgress,
-        [start + 0.05, start + transitionBuffer + 0.05, 1],
-        [0, 1, 1]
-      );
-    } else {
-      translate = useTransform(
-        scrollYProgress,
-        [start, start + transitionBuffer, end - transitionBuffer, end],
-        ["250%", "0%", "0%", "-250%"]
-      );
-      opacity = useTransform(
-        scrollYProgress,
-        [
-          start + 0.05,
-          start + transitionBuffer + 0.05,
-          end - transitionBuffer - 0.05,
-          end - 0.05,
-        ],
-        [0, 1, 1, 0]
-      );
-    }
+  // Step 2 transforms
+  const step2Start = 2 / 3;
+  const step2Translate = useTransform(
+    scrollYProgress,
+    [step2Start, step2Start + transitionBuffer, 1],
+    ["250%", "0%", "0%"]
+  );
+  const step2Opacity = useTransform(
+    scrollYProgress,
+    [step2Start + 0.05, step2Start + transitionBuffer + 0.05, 1],
+    [0, 1, 1]
+  );
 
-    return { translate, opacity };
-  });
+  // Create stepTransforms array from the hooks
+  const stepTransforms = [
+    { translate: step0Translate, opacity: step0Opacity },
+    { translate: step1Translate, opacity: step1Opacity },
+    { translate: step2Translate, opacity: step2Opacity },
+  ];
 
   const handleTryItOut = () => {
     if (showTryItOut) {
