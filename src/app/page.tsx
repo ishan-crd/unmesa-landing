@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <>
       <HeroSection />
-      //new
+      {/* new */}
       <HowItWorks />
       <UniqueFeatures />
       <Testimonials />
