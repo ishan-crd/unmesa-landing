@@ -47,8 +47,14 @@ const TryItOut = forwardRef<HTMLDivElement>((_, ref) => {
 
   useEffect(() => {
     const fetchMascots = async () => {
-      const { data } = await axios.get<Mascot[]>("/api/mascots");
-      setMascots(data);
+      try {
+        const { data } = await axios.get<Mascot[]>("/api/mascots");
+        setMascots(data);
+      } catch (error) {
+        console.error("Error fetching mascots:", error);
+        // Set empty array if fetch fails to prevent UI errors
+        setMascots([]);
+      }
     };
     fetchMascots();
   }, []);
